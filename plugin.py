@@ -105,8 +105,8 @@ class BasePlugin:
     iType = 0xF3
     # integer: subtype (sTypeManagedCounter)
     iSubType = 0x21
-    # integer: switch type (Energy)
-    iSwitchType = 0
+    # integer: switch type (Energy Generated)
+    iSwitchType = 4
     # string: step name of the state machine
     sConnectionStep = None
     # boolean: true if a step failed
