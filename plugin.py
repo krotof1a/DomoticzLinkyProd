@@ -21,11 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-<plugin key="linky" name="Linky" author="Barberousse" version="1.1.6" externallink="https://github.com/guillaumezin/DomoticzLinky">
+<plugin key="linkyProd" name="LinkyProd" author="krotof1a" version="1.1.6" externallink="https://github.com/krotof1a/DomoticzLinkyProd">
     <params>
         <param field="Username" label="Adresse e-mail" width="200px" required="true" default=""/>
         <param field="Password" label="Mot de passe" width="200px" required="true" default="" password="true"/>
-        <param field="Mode5" label="Consommation à montrer sur le tableau de bord" width="200px">
+        <param field="Mode5" label="Production à montrer sur le tableau de bord" width="200px">
             <options>
                 <option label="Journée dernière" value="day"  default="true" />
                 <option label="Semaine en cours" value="week" />
@@ -41,8 +41,7 @@
                 <option label="Non" value="False"  default="true" />
             </options>
         </param>
-        <param field="Mode1" label="Nombre de jours à récupérer pour la vue par heures (0 min, pour désactiver la récupération par heures, 7 max)" width="50px" required="false" default="7"/>
-        <param field="Mode2" label="Nombre de jours à récupérer pour les autres vues (28 min)" width="50px" required="false" default="366"/>
+        <param field="Mode2" label="Nombre de jours à récupérer pour les vues (28 min)" width="50px" required="false" default="366"/>
         <param field="Mode3" label="Debug" width="75px">
             <options>
                 <option label="Non" value="0"  default="true" />
@@ -72,8 +71,9 @@ API_BASE_URI = 'espace-client-particuliers.enedis.fr'
 BASE_PORT = '443'
 
 API_ENDPOINT_LOGIN = '/auth/UI/Login'
-API_ENDPOINT_DATA = '/group/espace-particuliers/suivi-de-consommation'
+API_ENDPOINT_DATA = '/group/espace-particuliers/mes-donnees-de-production-prod'
 API_ACCEPT_TERMS = '/c/portal/update_terms_of_use'
+Mode1 = 0
 
 #HEADERS = {
     #'Accept':'application/json, text/javascript, */*; q=0.01',
@@ -98,9 +98,9 @@ class BasePlugin:
     # integer: index of the Linky device
     iIndexUnit = 1
     # string: name of the Linky device
-    sDeviceName = "Linky"
+    sDeviceName = "LinkyProd"
     # string: description of the Linky device
-    sDescription = "Compteur Linky"
+    sDescription = "Compteur Linky Production"
     # integer: type (pTypeGeneral)
     iType = 0xF3
     # integer: subtype (sTypeManagedCounter)
@@ -233,7 +233,8 @@ class BasePlugin:
     # ask data to Enedis website, based on a resource_id ("urlCdcHeure" or "urlCdcJour") and date (max 28 days at once)
     def getData(self, resource_id, start_date, end_date, ):
         #Domoticz.Log(resource_id + " " + str(end_date))
-        req_part = 'lincspartdisplaycdc_WAR_lincspartcdcportlet'
+        #req_part = 'lincspartdisplaycdc_WAR_lincspartcdcportlet'
+        req_part = 'partproddonneesprod_WAR_lincspartportlet_INSTANCE_prodDonneesProd'
 
         payload = {
             '_' + req_part + '_dateDebut': datetimeToEnderdisDateString(start_date),
@@ -255,7 +256,7 @@ class BasePlugin:
             'p_p_cacheability': 'cacheLevelPage',
             'p_p_col_id': 'column-1',
             'p_p_col_pos': 1,
-            'p_p_col_count': 2
+            'p_p_col_count': 3
         }
         
         sendData = {
@@ -691,7 +692,7 @@ class BasePlugin:
             Domoticz.Log("Mot de passe entré")
         else:
             Domoticz.Log("Mot de passe laissé vide")
-        Domoticz.Log("Consommation à montrer sur le tableau de bord mis à " + self.sConsumptionType)
+        Domoticz.Log("Production à montrer sur le tableau de bord mis à " + self.sConsumptionType)
         Domoticz.Log("Accepter automatiquement les conditions d'utilisation mis à " + str(self.bAutoAcceptTerms))
         Domoticz.Log("Nombre de jours à récupérer pour la vue par heures mis à " + str(self.iHistoryDaysForHoursView))
         Domoticz.Log("Nombre de jours à récupérer pour les autres vues mis à " + str(self.iHistoryDaysForDaysView))
