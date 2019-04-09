@@ -73,7 +73,6 @@ BASE_PORT = '443'
 API_ENDPOINT_LOGIN = '/auth/UI/Login'
 API_ENDPOINT_DATA = '/group/espace-particuliers/mes-donnees-de-production-prod'
 API_ACCEPT_TERMS = '/c/portal/update_terms_of_use'
-Mode1 = 0
 
 #HEADERS = {
     #'Accept':'application/json, text/javascript, */*; q=0.01',
@@ -306,73 +305,6 @@ class BasePlugin:
         else:
             Domoticz.Error(logMessage + " durant l'étape " + self.sConnectionStep + " de " + datetimeToEnderdisDateString(self.dateBeginDays) + " à " + datetimeToEnderdisDateString(self.dateEndDays))
 
-    # Grab hours data inside received JSON data for short log
-    def exploreDataHours(self, Data):
-        self.dumpDictToLog(Data)
-        if Data and ("Data" in Data):
-            try:
-                dJson = json.loads(Data["Data"].decode())
-            except ValueError as err:
-                self.showStepError(True, "Les données reçues ne sont pas du JSON : " + str(err))
-                return False
-            except TypeError as err:
-                self.showStepError(True, "Le type de données reçues n'est pas JSON : " + str(err))
-                return False
-            except:
-                self.showStepError(True, "Erreur dans les données JSON : " + sys.exc_info()[0])
-                return False
-            else:
-                if dJson and ("etat" in dJson) and ("erreurText" in dJson["etat"]):
-                    self.showStepError(True, "Erreur reçue : " + html.unescape(dJson["etat"]["erreurText"]))
-                if dJson and ("etat" in dJson) and ("valeur" in dJson["etat"]) and (dJson["etat"]["valeur"] == "termine"):
-                    try:
-                        beginDate = enerdisDateToDatetime(dJson["graphe"]["periode"]["dateDebut"])
-                        endDate = enerdisDateToDatetime(dJson["graphe"]["periode"]["dateFin"])
-                        # Shift to +1 hour for Domoticz, because bars/hours for graph are shifted to -1 hour in Domoticz, cf. constructTime() call in WebServer.cpp
-                        endDate = endDate + timedelta(hours=1)
-                    except (TypeError, ValueError) as err:
-                        self.showStepError(True, "Erreur dans le format de donnée de date JSON : " + str(err))
-                        return False
-                    except:
-                        self.showStepError(True, "Erreur dans la donnée de date JSON : " + sys.exc_info()[0])
-                        return False
-                    # We accumulate data because Enedis sends kWh for every 30 minutes and Domoticz expects data only for every hour
-                    accumulation = 0.0
-                    currentDay = -1
-                    steps = 1.0
-                    dataSeenToTheEnd = False
-                    for index, data in enumerate(dJson["graphe"]["data"]):
-                        try:
-                            val = float(data["valeur"]) * 1000.0
-                        except:
-                            val = -1.0
-                        if (val >= 0.0):
-                            # Shift to +1 hour for Domoticz, because bars/hours for graph are shifted to -1 hour in Domoticz, cf. constructTime() call in WebServer.cpp
-                            # Enedis and Domoticz doesn't set the same date for used energy, add offset
-                            curDate = beginDate + timedelta(hours=1, minutes=((index+1)*30))
-                            accumulation = accumulation + val
-                            #Domoticz.Log("Value " + str(val) + " " + datetimeToSQLDateTimeString(curDate))
-                            if curDate.minute == 0:
-                                # Check that we had enough data, as expected
-                                if curDate >= endDate:
-                                    #Domoticz.Log("Last val")
-                                    dataSeenToTheEnd = True
-                                #Domoticz.Log("accumulation " + str(accumulation / steps) + " " + datetimeToSQLDateTimeString(curDate))
-                                if not self.createAndAddToDevice(accumulation / steps, datetimeToSQLDateTimeString(curDate)):
-                                    return False
-                                accumulation = 0.0
-                                steps = 0.0
-                            steps = steps + 1.0
-                    if not dataSeenToTheEnd:
-                        self.showStepError(True, "Données manquantes")                        
-                    return dataSeenToTheEnd
-                elif dJson and ("etat" in dJson) and ("valeur" in dJson["etat"]):
-                    self.showStepError(True, "Erreur à la réception de données JSON (code : " + str(dJson["etat"]["valeur"]) + ")")
-                else:
-                    self.showStepError(True, "Erreur à la réception de données JSON")
-        else:
-            self.showStepError(True, "Aucune donnée reçue")
-        return False
     
     def resetDayAccumulate(self, endDate):
         endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -594,26 +526,8 @@ class BasePlugin:
                     self.sConnectionStep = "getdatadays"
                     self.getData("urlCdcJour", self.dateBeginDays, self.dateEndDays)
                 else:
-                    # user set Mode1 to 0, he doesn't want to grab hours data
-                    if self.iHistoryDaysForHoursView < 1:
-                        self.sConnectionStep = "idle"
-                        Domoticz.Log("Done")
-                    else:
-                        self.sConnectionStep = "getdatahours"
-                        self.getData("urlCdcHeure", self.dateBeginHours, self.dateEndHours)
-
-        # Ask data for hours
-        elif self.sConnectionStep == "getdatahours":
-            if not self.httpConn.Connected():
-                self.showStepError(True, "Récupération des données pour la vue par heures")
-                self.sConnectionStep = "idle"
-                self.bHasAFail = True
-            else:
-                # Analyse data for hours
-                if not self.exploreDataHours(Data):
-                    self.bHasAFail = True
-                self.sConnectionStep = "idle"
-                Domoticz.Log("Fait")
+                    self.sConnectionStep = "idle"
+                    Domoticz.Log("Done")
                 
         # Next connection time depends on success
         if self.sConnectionStep == "idle":
@@ -646,7 +560,7 @@ class BasePlugin:
         
         self.sUser = Parameters["Username"]
         self.sPassword = Parameters["Password"]
-        self.iHistoryDaysForHoursView = Parameters["Mode1"]
+        self.iHistoryDaysForHoursView = 0
         self.iHistoryDaysForDaysView = Parameters["Mode2"]
         self.bAutoAcceptTerms = Parameters["Mode4"] == "True"
         self.sConsumptionType = Parameters["Mode5"]
