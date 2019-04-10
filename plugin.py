@@ -236,8 +236,8 @@ class BasePlugin:
         req_part = 'partproddonneesprod_WAR_lincspartportlet_INSTANCE_prodDonneesProd'
 
         payload = {
-            '_' + req_part + '_dateDebut': datetimeToEnderdisDateString(start_date),
-            '_' + req_part + '_dateFin': datetimeToEnderdisDateString(end_date)
+            '_' + req_part + '_beginDate': datetimeToEnderdisDateString(start_date),
+            '_' + req_part + '_endDate': datetimeToEnderdisDateString(end_date)
         }
         
         headers = self.initHeaders()
