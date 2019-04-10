@@ -357,39 +357,32 @@ class BasePlugin:
                 self.showStepError(False, "Erreur dans les données JSON : " + sys.exc_info()[0])
                 return False
             else:
-                if dJson and ("etat" in dJson) and ("erreurText" in dJson["etat"]):
-                    self.showStepError(False, "Erreur reçue : " + html.unescape(dJson["etat"]["erreurText"]))
-                if dJson and ("etat" in dJson) and ("valeur" in dJson["etat"]) and (dJson["etat"]["valeur"] == "termine"):
+                if dJson and ("prodValueList" in dJson) and ("timestampsInterval"):
                     try:
-                        beginDate = enerdisDateToDatetime(dJson["graphe"]["periode"]["dateDebut"])
-                        endDate = enerdisDateToDatetime(dJson["graphe"]["periode"]["dateFin"])
+                        beginDate = enerdisTSToDatetime(dJson["timestampsInterval"][0])
+                        endDate = enerdisTSToDatetime(dJson["timestampsInterval"][1])
                     except ValueError as err:
                         self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
                         return False
                     except:
                         self.showStepError(False, "Erreur dans la donnée de date JSON : " + sys.exc_info()[0])
                         return False
-                    for index, data in enumerate(dJson["graphe"]["data"]):
+                    for valeur in enumerate(dJson["prodValueList"]):
                         try:
-                            val = float(data["valeur"]) * 1000.0
+                            val = float(valeur) * 1000.0
                         except:
                             val = -1.0
                         if (val >= 0.0):
                             curDate = beginDate + timedelta(days=index)
                             self.dayAccumulate(curDate, val)
-                            #Domoticz.Log("Value " + str(val) + " " + datetimeToSQLDateString(curDate))
-                            #self.dumpDictToLog(values)
                             if not self.createAndAddToDevice(val, datetimeToSQLDateString(curDate)):
                                 return False
                             # If we are on the most recent batch and end date, use the mose recent data for Domoticz dashboard
                             if bLocalFirstMonths and (curDate == endDate):
-                                #Domoticz.Log("Update " + str(val) + " " + datetimeToSQLDateString(curDate))
                                 bLocalFirstMonths = False
                                 if not self.updateDevice(self.daysAccumulate):
                                     return False
                     return True
-                elif dJson and ("etat" in dJson) and ("valeur" in dJson["etat"]):
-                    self.showStepError(True, "Erreur à la réception de données JSON (code : " + str(dJson["etat"]["valeur"]) + ")")
                 else:
                     self.showStepError(False, "Erreur à la réception de données JSON")
         else:
@@ -726,6 +719,10 @@ def DumpConfigToLog():
         self.myDebug("Device sValue:   '" + Devices[x].sValue + "'")
         self.myDebug("Device LastLevel: " + str(Devices[x].LastLevel))
     return
+
+# Convert Enedis timestamp string to datetime object
+def enerdisTSToDatetime(datetimeStr):
+    return datetime(*(time.localtime(datetimeStr)))
 
 # Convert Enedis date string to datetime object
 def enerdisDateToDatetime(datetimeStr):
