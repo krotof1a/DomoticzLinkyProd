@@ -255,7 +255,7 @@ class BasePlugin:
             'p_p_cacheability': 'cacheLevelPage',
             'p_p_col_id': 'column-1',
             'p_p_col_pos': 1,
-            'p_p_col_count': 3
+            'p_p_col_count': 2
         }
         
         sendData = {
