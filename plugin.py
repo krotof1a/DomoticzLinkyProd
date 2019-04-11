@@ -362,9 +362,9 @@ class BasePlugin:
                         ts1 = dJson['timestampsInterval'][0]
                         ts2 = dJson['timestampsInterval'][1]
                         self.myDebug('test1')
-                        beginDate = enerdisTSToDatetime(str(ts1))
+                        beginDate = datetime(*(time.localtime(ts1)))
                         self.myDebug('test2')
-                        endDate = enerdisTSToDatetime(str(ts2))
+                        endDate   = datetime(*(time.localtime(ts2)))
                         self.myDebug('test3')
                     except ValueError as err:
                         self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
@@ -724,10 +724,6 @@ def DumpConfigToLog():
         self.myDebug("Device sValue:   '" + Devices[x].sValue + "'")
         self.myDebug("Device LastLevel: " + str(Devices[x].LastLevel))
     return
-
-# Convert Enedis timestamp string to datetime object
-def enerdisTSToDatetime(timestampStr):
-    return datetime(*(time.localtime(timestampStr)))
 
 # Convert Enedis date string to datetime object
 def enerdisDateToDatetime(datetimeStr):
