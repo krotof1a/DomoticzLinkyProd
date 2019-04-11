@@ -362,7 +362,7 @@ class BasePlugin:
                         self.myDebug("test1")
                         ts1=dJson['timestampsInterval'][0]
                         self.myDebug("ts1="+str(ts1))
-                        beginDate=datetime(*(time.localtime(ts1)))
+                        beginDate=datetime.fromtimestamp(time.localtime(ts1))
                         self.myDebug("bd1="+str(beginDate))
                         self.myDebug("test2")
                         endDate=datetime(*(time.localtime(dJson['timestampsInterval'][1])))
