@@ -362,9 +362,9 @@ class BasePlugin:
                         ts1 = dJson['timestampsInterval'][0]
                         ts2 = dJson['timestampsInterval'][1]
                         self.myDebug('test1')
-                        beginDate = enerdisTSToDatetime(ts1)
+                        beginDate = enerdisTSToDatetime(str(ts1))
                         self.myDebug('test2')
-                        endDate = enerdisTSToDatetime(ts2)
+                        endDate = enerdisTSToDatetime(str(ts2))
                         self.myDebug('test3')
                     except ValueError as err:
                         self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
