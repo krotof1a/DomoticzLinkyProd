@@ -358,21 +358,21 @@ class BasePlugin:
                 return False
             else:
                 if dJson and ("prodValueList" in dJson) and ("timestampsInterval" in dJson):
-                    try:
-                        self.myDebug("test1")
-                        ts1=dJson['timestampsInterval'][0]
-                        self.myDebug("ts1="+str(ts1))
-                        beginDate=datetime.fromtimestamp(time.localtime(ts1))
-                        self.myDebug("bd1="+str(beginDate))
-                        self.myDebug("test2")
-                        endDate=datetime(*(time.localtime(dJson['timestampsInterval'][1])))
-                        self.myDebug("test3")
-                    except ValueError as err:
-                        self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
-                        return False
-                    except:
-                        self.showStepError(False, "Erreur dans la donnée de date JSON : " + sys.exc_info()[0])
-                        return False
+                    #try:
+                    self.myDebug("test1")
+                    ts1=dJson['timestampsInterval'][0]
+                    self.myDebug("ts1="+str(ts1))
+                    beginDate=datetime.fromtimestamp(time.localtime(ts1))
+                    self.myDebug("bd1="+str(beginDate))
+                    self.myDebug("test2")
+                    endDate=datetime(*(time.localtime(dJson['timestampsInterval'][1])))
+                    self.myDebug("test3")
+                    #except ValueError as err:
+                    #    self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
+                    #    return False
+                    #except:
+                    #    self.showStepError(False, "Erreur dans la donnée de date JSON : " + sys.exc_info()[0])
+                    #    return False
                     for index,valeur in enumerate(dJson['prodValueList']):
                         try:
                             val = float(valeur) * 1000.0
