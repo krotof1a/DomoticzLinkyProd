@@ -727,7 +727,6 @@ def DumpConfigToLog():
 
 # Convert Enedis timestamp string to datetime object
 def enerdisTSToDatetime(timestampStr):
-    self.myDebug("TS=" + str(timestampStr))
     return datetime(*(time.localtime(timestampStr)))
 
 # Convert Enedis date string to datetime object
