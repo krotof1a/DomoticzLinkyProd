@@ -359,11 +359,11 @@ class BasePlugin:
             else:
                 if dJson and ("prodValueList" in dJson) and ("timestampsInterval" in dJson):
                     try:
-                        self.myDebug('test1')
+                        self.myDebug("test1")
                         beginDate = datetime(*(time.localtime(dJson['timestampsInterval'][0])))
-                        self.myDebug('test2')
+                        self.myDebug("test2")
                         endDate   = datetime(*(time.localtime(dJson['timestampsInterval'][1])))
-                        self.myDebug('test3')
+                        self.myDebug("test3")
                     except ValueError as err:
                         self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
                         return False
