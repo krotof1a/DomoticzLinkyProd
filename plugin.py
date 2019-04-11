@@ -361,7 +361,7 @@ class BasePlugin:
                     #try:
                     beginDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][0]))
                     endDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][1]))
-                    self.myDebug("Got date from "+str(begindDate)+" to "+str(endDate))
+                    self.myDebug("Got date from "+str(beginDate)+" to "+str(endDate))
                     #except ValueError as err:
                     #    self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
                     #    return False
