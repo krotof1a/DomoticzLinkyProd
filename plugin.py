@@ -358,10 +358,12 @@ class BasePlugin:
                 self.showStepError(False, "Erreur dans les données JSON : " + sys.exc_info()[0])
                 return False
             else:
-                if dJson and ("prodValueList" in dJson) and ("timestampsInterval" in dJson):
+                if dJson and ("prodValueList" in dJson):
                     #try:
-                    beginDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][0]))
-                    endDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][1]))
+                    #beginDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][0]))
+                    #endDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][1]))
+                    beginDate=self.dateBeginDays
+                    endDate=self.dateEndDays
                     self.myDebug("Got date from "+str(beginDate)+" to "+str(endDate))
                     #except ValueError as err:
                     #    self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
