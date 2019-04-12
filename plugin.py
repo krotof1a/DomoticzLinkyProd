@@ -231,7 +231,7 @@ class BasePlugin:
         
     # ask data to Enedis website, based on a resource_id ("urlCdcHeure" or "urlCdcJour") and date (max 28 days at once)
     def getData(self, resource_id, start_date, end_date, ):
-        self.myDebug("Requesting value from "+str(start_date)+" to "+str(end_date))
+        #self.myDebug("Requesting value from "+str(start_date)+" to "+str(end_date))
         #Domoticz.Log(resource_id + " " + str(end_date))
         #req_part = 'lincspartdisplaycdc_WAR_lincspartcdcportlet'
         req_part = 'partproddonneesprod_WAR_lincspartportlet_INSTANCE_prodDonneesProd'
@@ -359,18 +359,8 @@ class BasePlugin:
                 return False
             else:
                 if dJson and ("prodValueList" in dJson):
-                    #try:
-                    #beginDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][0]))
-                    #endDate=datetime.fromtimestamp(float(dJson['timestampsInterval'][1]))
                     beginDate=self.dateBeginDays
                     endDate=self.dateEndDays
-                    self.myDebug("Got date from "+str(beginDate)+" to "+str(endDate))
-                    #except ValueError as err:
-                    #    self.showStepError(False, "Erreur dans le format de donnée de date JSON : " + str(err))
-                    #    return False
-                    #except:
-                    #    self.showStepError(False, "Erreur dans la donnée de date JSON : " + sys.exc_info()[0])
-                    #    return False
                     for index,valeur in enumerate(dJson['prodValueList']):
                         try:
                             val = float(valeur) * 1000.0
