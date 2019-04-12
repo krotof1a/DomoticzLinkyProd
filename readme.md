@@ -1,4 +1,4 @@
-# Plugin Linky pour Domoticz
+# Plugin Production Linky pour Domoticz
 
 Ceci est un plugin pour [Domoticz](https://domoticz.com), récupérant les données de production Linky. Les données sont collectées du compte utilisateur [Enedis](http://www.enedis.fr) et stockées dans le log d'un dispositif compteur électrique.
 
